@@ -1,0 +1,20 @@
+{
+  "name": "tweetNode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "DEBUG=app:* nodemon index "
+  },
+  "keywords": [],
+  "author": "Alexis Araujo <ala1289@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "redis": "^3.0.2"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0"
+  }
+}
