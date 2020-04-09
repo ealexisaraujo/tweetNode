@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "DEBUG=app:* nodemon index "
+    "start:dev": "NODE_ENV=development nodemon ."
   },
   "keywords": [],
   "author": "Alexis Araujo <ala1289@gmail.com>",
@@ -16,7 +16,8 @@
     "ioredis": "^4.16.1",
     "redis": "^3.0.2",
     "tortoise": "^1.0.1",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "morgan": "^1.10.0"

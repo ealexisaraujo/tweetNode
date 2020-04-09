@@ -1,59 +1,22 @@
-const express = require('express');
-const morgan = require('morgan');
-const app = express();
+/* eslint-disable global-require */
 
-const port = 3000;
+'use strict';
 
-const axios = require('axios');
-const redis = require('redis');
+const logger = require('winston');
 
-app.use(morgan('dev'));
-app.use(express.json());
+const type = process.env.PROCESS_TYPE;
 
-// make a connection to the local instance of redis
-const client = redis.createClient(6379);
+logger.info(`Starting '${type}' process`, { pid: process.pid });
 
-client.on('error', (error) => {
-  console.error(error);
-});
-
-app.get('/recipe/:fooditem', (req, res) => {
-  try {
-    const foodItem = req.params.fooditem;
-
-    // Check the redis store for the data first
-    client.get(foodItem, async (err, recipe) => {
-      if (recipe) {
-        return res.status(200).send({
-          error: false,
-          message: `Recipe for ${foodItem} from the cache`,
-          data: JSON.parse(recipe),
-        });
-      } else {
-        // When the data is not found in the cache then we can make request to the server
-
-        const recipe = await axios.get(
-          `http://www.recipepuppy.com/api/?q=${foodItem}`,
-        );
-
-        // save the record in the cache for subsequent request
-        client.setex(foodItem, 1440, JSON.stringify(recipe.data.results));
-
-        // return the result to the client
-        return res.status(200).send({
-          error: false,
-          message: `Recipe for ${foodItem} from the server`,
-          data: recipe.data.results,
-        });
-      }
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
-
-module.exports = app;
+if (type === 'web') {
+  require('./web');
+} else if (type === 'twitter-stream-worker') {
+  require('./worker/twitter-stream');
+} else if (type === 'social-preprocessor-worker') {
+  require('./worker/social-preprocessor');
+} else {
+  throw new Error(`
+    ${type} is an unsupported process type. 
+    Use one of: 'web', 'twitter-stream-worker', 'social-preprocessor-worker'!
+  `);
+}
