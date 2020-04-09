@@ -11,7 +11,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // make a connection to the local instance of redis
-const client = redis.createClient(6379);
+const client = redis.createClient(6379, 'redis');
 
 client.on('error', (error) => {
   console.error(error);
