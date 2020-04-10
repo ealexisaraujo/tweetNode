@@ -1,22 +1,19 @@
 /* eslint-disable global-require */
-
-'use strict';
-
 const logger = require('winston');
 
 const type = process.env.PROCESS_TYPE;
 
 logger.info(`Starting '${type}' process`, { pid: process.pid });
 
-if (type === 'web') {
-  require('./web');
-} else if (type === 'twitter-stream-worker') {
+if (type === 'api') {
+  require('./api');
+} else if (type === 'twitter-stream') {
   require('./worker/twitter-stream');
-} else if (type === 'social-preprocessor-worker') {
-  require('./worker/social-preprocessor');
+} else if (type === 'load-data') {
+  require('./worker/load-data');
 } else {
   throw new Error(`
-    ${type} is an unsupported process type. 
-    Use one of: 'web', 'twitter-stream-worker', 'social-preprocessor-worker'!
+    ${type} is an unsupported process type.
+    Use one of: 'api', 'twitter-stream', 'load-data'!
   `);
 }

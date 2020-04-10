@@ -1,11 +1,26 @@
 version: '3'
 
 services:
-  redis:
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_VHOST: '/players'
+      RABBITMQ_DEFAULT_USER: 'dev'
+      RABBITMQ_DEFAULT_PASS: 'dev'
+    volumes:
+      - type: volume
+        source: rabbitmq
+        target: /var/lib/rabbitmq/mnesia
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+  redis: &redis
     image: redis
     container_name: cache
     expose:
       - 6379
+    env_file:
+      - ./.envs/
   app:
     build: ./
     volumes:
@@ -15,8 +30,6 @@ services:
       - redis
     ports:
       - 3000:3000
-    environment:
-      - REDIS_URL=redis://cache
-      - NODE_ENV=development
-      - PORT=3000
+    env_file:
+      - ./.envs/
     command: sh -c 'npm i && npm run dev'
