@@ -12,6 +12,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "graphql-yoga": "^1.18.3",
     "ioredis": "^4.16.1",
     "joi": "^14.3.1",
     "tortoise": "^1.0.1",
