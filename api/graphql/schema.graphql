@@ -1,3 +1,9 @@
 type Query {
-  ping: String
+  get(key: String!): [Tweet!]
+}
+
+type Tweet {
+  text: String!
+  tweeter: String!
+  createdAt: String!
 }
