@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "start:dev": "NODE_ENV=development nodemon .",
+    "dev": "NODE_ENV=development nodemon .",
     "test": "mocha test/*.test.js"
   },
   "keywords": [],
