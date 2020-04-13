@@ -1,35 +1,48 @@
-version: '3'
+version: '3.7'
 
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
+  # api:
+  #   container_name: api
+  #   image: node:12-alpine
+  #   working_dir: /var/www
+  #   volumes:
+  #     - ./:/var/www
+  #   env_file:
+  #     - ./.env
+  #   command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=api npm run start"
+  #   ports:
+  #     - 3000:3000
+  twitter-stream:
+    container_name: twitter_stream
+    image: node:12-alpine
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    env_file:
+      - .env
     environment:
-      RABBITMQ_DEFAULT_VHOST: '/players'
-      RABBITMQ_DEFAULT_USER: 'dev'
-      RABBITMQ_DEFAULT_PASS: 'dev'
-    volumes:
-      - type: volume
-        source: rabbitmq
-        target: /var/lib/rabbitmq/mnesia
-    ports:
-      - '5672:5672'
-      - '15672:15672'
-  redis: &redis
-    image: redis
-    container_name: cache
+      - NODE_ENV=$NODE_ENV
+      - LOGGER_LEVEL=$LOGGER_LEVEL
+      - LOGGER_ENABLED=$LOGGER_ENABLED
+      - TWITTER_CONSUMER_KEY=$TWITTER_CONSUMER_KEY
+      - TWITTER_CONSUMER_SECRET=$TWITTER_CONSUMER_SECRET
+      - TWITTER_ACCESS_TOKEN_KEY=$TWITTER_ACCESS_TOKEN_KEY
+      - TWITTER_ACCESS_TOKEN_SECRET=$TWITTER_ACCESS_TOKEN_SECRET
+      - TWITTER_TRACK=$TWITTER_TRACK
+      - RABBITMQ_URI=$RABBITMQ_URI
+    command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=twitter-stream npm run start"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    container_name: rabbitmq_service
+    image: rabbitmq:management-alpine
     expose:
-      - 6379
-    env_file:
-      - ./.envs/
-  app:
-    build: ./
-    volumes:
-      - ./:/var/www/app
-      - /var/www/app/node_modules
-    links:
-      - redis
+      - '5672'
     ports:
-      - 3000:3000
-    env_file:
-      - ./.envs/
-    command: sh -c 'npm i && npm run dev'
+      - '15672:15672'
+    healthcheck:
+      test: ['CMD', 'nc', '-z', 'localhost', '5672']
+      interval: 5s
+      timeout: 15s
+      retries: 1

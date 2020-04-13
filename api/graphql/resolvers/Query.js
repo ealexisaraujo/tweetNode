@@ -7,7 +7,9 @@ const Query = {
         tweet = JSON.parse(string);
         return tweet;
       });
-      console.log(tweets);
+      if ((NODE_ENV = 'development')) {
+        console.log(tweets);
+      }
 
       return tweets;
     } catch (error) {
