@@ -1,48 +1,59 @@
 version: '3.7'
 
 services:
-  # api:
-  #   container_name: api
+  api:
+    container_name: api
+    image: node:12-alpine
+    working_dir: /var/www
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/var/www
+    command: /bin/sh -c "npm install && PROCESS_TYPE=api npm run start"
+    depends_on:
+      - redis
+    ports:
+      - '3000:3000'
+
+  # load_data:
+  #   container_name: load_data
+  #   image: node:12-alpine
+  #   working_dir: /var/www
+  #   env_file:
+  #     - ./.env
+  #   volumes:
+  #     - ./:/var/www
+  #   command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=load-data npm run start"
+  #   depends_on:
+  #     - redis
+  #     - rabbitmq
+
+  # twitter-stream:
+  #   container_name: twitter_stream
   #   image: node:12-alpine
   #   working_dir: /var/www
   #   volumes:
   #     - ./:/var/www
   #   env_file:
   #     - ./.env
-  #   command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=api npm run start"
-  #   ports:
-  #     - 3000:3000
-  twitter-stream:
-    container_name: twitter_stream
-    image: node:12-alpine
-    working_dir: /var/www
+  #   command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=twitter-stream npm run start"
+  #   depends_on:
+  #     - rabbitmq
+
+  redis:
+    container_name: redis_service
+    image: redis:alpine
+    ports:
+      - '6379:6379'
     volumes:
-      - ./:/var/www
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=$NODE_ENV
-      - LOGGER_LEVEL=$LOGGER_LEVEL
-      - LOGGER_ENABLED=$LOGGER_ENABLED
-      - TWITTER_CONSUMER_KEY=$TWITTER_CONSUMER_KEY
-      - TWITTER_CONSUMER_SECRET=$TWITTER_CONSUMER_SECRET
-      - TWITTER_ACCESS_TOKEN_KEY=$TWITTER_ACCESS_TOKEN_KEY
-      - TWITTER_ACCESS_TOKEN_SECRET=$TWITTER_ACCESS_TOKEN_SECRET
-      - TWITTER_TRACK=$TWITTER_TRACK
-      - RABBITMQ_URI=$RABBITMQ_URI
-    command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=twitter-stream npm run start"
-    depends_on:
-      - rabbitmq
+      - redis-data:/data
 
   rabbitmq:
     container_name: rabbitmq_service
     image: rabbitmq:management-alpine
-    expose:
-      - '5672'
     ports:
+      - '5672:5672'
       - '15672:15672'
-    healthcheck:
-      test: ['CMD', 'nc', '-z', 'localhost', '5672']
-      interval: 5s
-      timeout: 15s
-      retries: 1
+
+volumes:
+  redis-data:
