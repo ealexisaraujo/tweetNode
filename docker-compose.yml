@@ -15,30 +15,30 @@ services:
     ports:
       - '3000:3000'
 
-  # load_data:
-  #   container_name: load_data
-  #   image: node:12-alpine
-  #   working_dir: /var/www
-  #   env_file:
-  #     - ./.env
-  #   volumes:
-  #     - ./:/var/www
-  #   command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=load-data npm run start"
-  #   depends_on:
-  #     - redis
-  #     - rabbitmq
+  load_data:
+    container_name: load_data
+    image: node:12-alpine
+    working_dir: /var/www
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/var/www
+    command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=load-data npm run start"
+    depends_on:
+      - redis
+      - rabbitmq
 
-  # twitter-stream:
-  #   container_name: twitter_stream
-  #   image: node:12-alpine
-  #   working_dir: /var/www
-  #   volumes:
-  #     - ./:/var/www
-  #   env_file:
-  #     - ./.env
-  #   command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=twitter-stream npm run start"
-  #   depends_on:
-  #     - rabbitmq
+  twitter-stream:
+    container_name: twitter_stream
+    image: node:12-alpine
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    env_file:
+      - ./.env
+    command: /bin/sh -c "sleep 20 && npm install && PROCESS_TYPE=twitter-stream npm run start"
+    depends_on:
+      - rabbitmq
 
   redis:
     container_name: redis_service
