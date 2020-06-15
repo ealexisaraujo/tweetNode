@@ -37,7 +37,7 @@ app.get('/recipe/:fooditem', (req, res) => {
         );
 
         // save the record in the cache for subsequent request
-        client.setex(foodItem, 1440, JSON.stringify(recipe.data.results));
+        client.setex(foodItem, 60000, JSON.stringify(recipe.data.results));
 
         // return the result to the client
         return res.status(200).send({
